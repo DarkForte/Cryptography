@@ -29,26 +29,63 @@ def strxor(s1, s2):
   return ret
 
 
-
-all_xor = []
+all_xor_plain = []
 
 for i, c1 in enumerate(ciphers):
   print i
+  now_xor_plain = []
+
   for c2 in ciphers:
     xor_res = strxor(c1, c2)
 
     now = 0
-    plain_str = ""
+    xor_plain = ""
     while now < len(xor_res):
       now_str = xor_res[now:now+2]
       now_char = chr(int(now_str, 16))
       if "a"<=now_char<="z" or "A" <= now_char <= "Z":
-        plain_str += now_char
+        xor_plain += now_char
       else:
-        plain_str += "?"
+        xor_plain += "?"
 
       now += 2
 
-    print plain_str
+    print xor_plain
+    now_xor_plain.append(xor_plain)
+
+  all_xor_plain.append(now_xor_plain)
+
+min_len = 10000
+all_msg = []
+for c in ciphers:
+  all_msg.append(['?']*(len(c)/2))
+  min_len = min(min_len, len(c)/2)
+
+for i, msg in enumerate(all_msg):
+  now_xor_plain = all_xor_plain[i]
+
+  for pos in range(0, min_len):
+    letter_count = 0
+
+    for xor_plain in now_xor_plain:
+      if xor_plain[pos] != '?':
+        letter_count += 1
+
+    if letter_count >= 7:
+      msg[pos] = ' '
+      for j, other_msg in enumerate(all_msg):
+        if i==j: continue
+        if now_xor_plain[j][pos] == "?":
+          other_msg[pos] = " "
+        else:
+          other_msg[pos] = chr(ord(now_xor_plain[j][pos]) ^ ord(" "))
+
+
+for i, msg in enumerate(all_msg):
+  print i
+  print "".join(msg)
+
+
+
 
 
